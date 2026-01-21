@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RSM4CCGEN - Ultimate Pro Suite</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --bg-panel: #0f0f0f;
+            --primary-red: #d32f2f;
+            --primary-red-bright: #ff0000;
+            --primary-dark: #800000;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+            --gold: #ffd700;
+            /* Responsive sidebar width */
+            --sidebar-width: 280px; 
+            --header-height: 70px;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Remove mobile tap color */
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: radial-gradient(circle at 50% 0%, #1a0505 0%, #000000 70%);
+            color: var(--text-white);
+            height: 100vh;
+            overflow: hidden; /* Prevent body scroll, handle inside containers */
+        }
+
+        /* --- 3D LOGO & SOCIALS --- */
+        .brand-container {
+            padding: 1.5rem 1.25rem;
+            text-align: center;
+            border-bottom: 1px solid #222;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .social-btn {
+            color: #ffffff; 
+            font-size: 1.2rem; 
+            text-decoration: none;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            width: 44px; 
+            height: 44px;
+            border-radius: 8px;
+            background: linear-gradient(145deg, #333, #111); 
+            border: 1px solid #555;
+            box-shadow: 
+                0 6px 0 #000, 
+                0 10px 15px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: transform 0.2s;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            color: var(--primary-red-bright);
+            border-color: var(--primary-red-bright);
+        }
+
+        .social-btn:active {
+            transform: translateY(1px); 
+            box-shadow: 0 2px 0 #000;
+        }
+
+        .brand-3d {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--text-white);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 
+                0 1px 0 #ccc, 0 2px 0 #aaa, 0 3px 0 #999, 0 4px 0 #888,
+                0 5px 0 #777, 0 6px 0 #666, 0 7px 0 #555, 0 8px 0 #444,
+                0 9px 0 #333, 0 10px 10px rgba(0,0,0,.7), 0 10px 20px rgba(0,0,0,.5);
+            display: inline-block;
+            margin: 0;
+        }
+        .brand-3d span { color: var(--primary-red-bright); text-shadow: 0 0 15px var(--primary-red); }
+
+        /* --- HAMBURGER MENU BUTTON (Mobile Only) --- */
+        .hamburger {
+            display: none; /* Hidden on desktop */
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 200;
+        }
+
+        /* --- LAYOUT --- */
+        #app { 
+            display: flex; 
+            width: 100%; 
+            height: 100vh; 
+        }
+
+        aside {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #111 0%, #080808 100%);
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease-in-out;
+            position: relative; /* Changed to relative for mobile transform */
+            height: 100%;
+        }
+
+        .nav-menu { 
+            padding: 1rem; 
+            flex: 1; 
+            overflow-y: auto; 
+            overflow-x: hidden; /* No horizontal scroll */
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            width: 100%;
+            padding: 1rem 1.25rem; /* Rem units for scaling */
+            margin-bottom: 0.5rem;
+            background: #1a1a1a;
+            border: none;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: left;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+            min-height: 50px; /* Touch target */
+        }
+
+        .nav-btn i { width: 24px; text-align: center; font-size: 1.1rem; }
+
+        .nav-btn:hover {
+            background: #252525;
+            color: var(--text-white);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(90deg, var(--primary-red) 0%, #000 100%);
+            color: white;
+            border-left: 4px solid var(--primary-red-bright);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* Overlay for Mobile Menu */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 90;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .overlay.active { opacity: 1; }
+
+        main {
+            flex: 1;
+            overflow-y: auto; /* Scroll main content */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            background-color: var(--bg-deep);
+            position: relative;
+            padding: 2rem;
+            padding-top: calc(var(--header-height) + 1rem); /* Space for fixed header on mobile */
+        }
+
+        /* --- RESPONSIVE MEDIA QUERIES --- */
+
+        /* PHONES (< 480px) */
+        @media (max-width: 480px) {
+            :root {
+                --sidebar-width: 280px; /* Fixed width, handled by off-canvas */
+            }
+
+            /* Show Hamburger */
+            .hamburger { display: block; }
+            .brand-container { display: none; } /* Hide logo in menu to save space */
+
+            /* Mobile Layout: Sidebar Off Canvas */
+            aside {
+                position: fixed; /* Fixed position for overlay */
+                left: 0; top: 0;
+                height: 100%;
+                transform: translateX(-100%); /* Hidden by default */
+                width: 85vw; /* Take up most of screen on small phones */
+                max-width: 320px;
+                box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+                z-index: 150;
+            }
+
+            aside.active { transform: translateX(0); }
+
+            main {
+                width: 100%; /* Full width */
+                padding-left: 0;
+            }
+
+            /* Adjust Grid for one column */
+            .form-grid {
+                grid-template-columns: 1fr !important; /* Stack inputs on small phones */
+                gap: 1rem;
+            }
+
+            /* Card Visuals */
+            .cc-visual-3d {
+                width: 100%; max-width: 320px; /* Responsive card width */
+                height: auto; aspect-ratio: 1.5;
+                padding: 15px; /* Smaller padding */
+                font-size: 0.9rem;
+            }
+            .cc-number { font-size: 1rem; } /* Smaller font on mobile */
+            .id-card-new { transform: none; /* Remove 3D effect on mobile for clarity */ }
+            .id-card-new:hover { transform: scale(1.02); }
+        }
+
+        /* TABLETS (480px - 768px) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            /* Tablet Portrait: Sidebar visible but maybe condensed or overlay? 
+               Let's keep sidebar fixed but allow content to flow */
+            main {
+                padding-left: var(--sidebar-width); /* Give space for fixed sidebar */
+            }
+            
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 Columns */
+            }
+
+            .id-card-new {
+                transform: scale(0.9); /* Scale down slightly */
+            }
+        }
+
+        /* LAPTOPS / DESKTOP (> 768px) */
+        @media (min-width: 769px) {
+            /* Hamburger Hidden */
+            .hamburger { display: none; }
+            .overlay { display: none !important; } /* No overlay needed */
+
+            aside {
+                position: relative; /* Normal flow */
+                height: 100vh;
+                transform: none;
+                width: var(--sidebar-width);
+            }
+
+            main {
+                padding-left: var(--sidebar-width);
+                padding-right: 2rem;
+            }
+
+            .brand-container { display: block; } /* Show logo on PC */
+
+            .form-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* PC Density */
+            }
+            
+            .id-card-new {
+                transform: rotateY(10deg) rotateX(5deg); /* Restore 3D effect on desktop */
+            }
+        }
+
+        /* --- 3D UI COMPONENTS (RESPONSIVE) --- */
+        .panel-3d {
+            background: var(--bg-panel);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 2rem; /* Rem scaling */
+            margin-bottom: 2rem;
+            box-shadow: 
+                0 10px 25px rgba(0,0,0,0.4), 
+                0 0 0 1px #222,
+                inset 0 1px 0 rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .panel-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+            flex-wrap: wrap; /* Allow header to wrap */
+            gap: 1rem;
+        }
+
+        .panel-header h2 { 
+            font-size: 1.25rem; /* Rem scaling */
+            color: var(--text-white); text-transform: uppercase; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px;
+            margin: 0;
+        }
+
+        .form-grid { display: grid; gap: 1.5rem; }
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        
+        label { 
+            font-size: 0.8rem; /* Smaller font on mobile */
+            color: var(--text-gray); 
+            text-transform: uppercase; 
+            font-weight: bold; 
+            letter-spacing: 1px; 
+        }
+
+        input, select, textarea {
+            background: #000; border: 1px solid #333; color: var(--text-white);
+            padding: 0.8rem 1rem; /* Responsive padding */
+            border-radius: 6px;
+            font-family: 'Courier New', monospace; font-size: 0.9rem;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.8), 0 1px 0 #222;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%; /* Ensure inputs don't overflow */
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none; border-color: var(--primary-red);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.8), 0 0 5px var(--primary-red);
+        }
+
+        /* BUTTONS */
+        .btn-3d {
+            padding: 0.8rem 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: white; border: none;
+            cursor: pointer;
+            position: relative;
+            background: linear-gradient(to bottom, #ff4d4d, #b71c1c);
+            border-radius: 8px; /* Slightly rounder */
+            box-shadow: 
+                0 6px 0 #5c0000, 
+                0 10px 15px rgba(0,0,0,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            transition: all 0.1s; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            letter-spacing: 0.5px; 
+            border-top: 1px solid #ff8888;
+            flex: 1;
+            min-width: 140px; /* Touch target size */
+        }
+
+        .btn-3d:active { transform: translateY(4px); box-shadow: 0 0 0 #5c0000, inset 0 2px 5px rgba(0,0,0,0.5); }
+
+        .btn-3d.secondary {
+            background: linear-gradient(to bottom, #555, #222);
+            box-shadow: 0 6px 0 #111, 0 10px 15px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+            border-top: 1px solid #777;
+        }
+        .btn-3d.secondary:active { transform: translateY(4px); box-shadow: 0 0 0 #111, inset 0 2px 5px rgba(0,0,0,0.5); }
+        .btn-3d.active-auto {
+            background: linear-gradient(to bottom, #28a745, #1e7e34);
+            box-shadow: 0 6px 0 #0c3b15, 0 10px 15px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3);
+            border-top: 1px solid #4eff7a;
+        }
+
+        /* TERMINAL & OUTPUT */
+        .terminal {
+            background: #080808; border: 1px solid #333; border-radius: 4px; padding: 1rem;
+            color: #0f0; font-family: 'Courier New', monospace; min-height: 150px; max-height: 350px;
+            overflow-y: auto; white-space: pre-wrap; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 1px 0 #222;
+            font-size: 0.85rem; text-shadow: 0 0 5px rgba(0, 255, 0, 0.4);
+            word-break: break-all; /* Prevent overflow on mobile */
+        }
+
+        /* --- MODULE SPECIFIC --- */
+        
+        /* VISUAL CARD GEN */
+        .card-display-grid {
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .cc-visual-3d {
+            width: 320px; /* Fixed base, shrinks on mobile */
+            max-width: 100%;
+            height: 200px;
+            border-radius: 15px; position: relative;
+            transform: rotateY(15deg) rotateX(5deg);
+            box-shadow: 15px 15px 30px rgba(0,0,0,0.8);
+            color: white; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;
+            overflow: hidden; transition: transform 0.3s; cursor: pointer;
+        }
+        .cc-visual-3d:hover { transform: rotateY(0) rotateX(0) scale(1.05); z-index: 10; }
+
+        .cc-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+        .cc-chip {
+            width: 40px; height: 28px; background: linear-gradient(135deg, #e6ac00, #cca300);
+            border-radius: 4px; border: 1px solid #8a6e2f;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4);
+        }
+        .cc-logo { font-size: 1.2rem; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.3); opacity: 0.9; }
+        .cc-number { font-family: 'Courier New', monospace; font-size: 1.2rem; letter-spacing: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); margin-bottom: 1rem; word-break: break-all; }
+        .cc-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+        .cc-name { text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; font-weight: 600; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .cc-details { text-align: right; display: flex; flex-direction: column; gap: 5px; align-items: flex-end; }
+        .cc-exp { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .cc-cvv { font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 3px; margin-top: 5px; }
+
+        /* Card Backgrounds */
+        .visa-bg { background: linear-gradient(135deg, #1a1f71 0%, #4b4b8b 100%); border: 1px solid rgba(255,255,255,0.2); }
+        .mc-bg { background: linear-gradient(135deg, #eb001b 0%, #f79e1b 100%); border: 1px solid rgba(255,255,255,0.2); }
+        .amex-bg { background: linear-gradient(135deg, #2e77bd 0%, #768ea6 100%); border: 1px solid rgba(255,255,255,0.2); }
+        .discover-bg { background: linear-gradient(135deg, #ff6600 0%, #ff9933 100%); border: 1px solid rgba(255,255,255,0.2); }
+
+        /* ID CARD */
+        .id-wrapper { display: flex; justify-content: center; padding: 2rem; perspective: 1200px; }
+        .id-card-new {
+            width: 400px; max-width: 100%; /* Responsive width */
+            height: 240px;
+            background: linear-gradient(135deg, #2c2c2c 0%, #111 100%);
+            border-radius: 12px; position: relative;
+            box-shadow: 20px 20px 50px rgba(0,0,0,0.9);
+            border: 1px solid #555;
+            overflow: hidden;
+            transition: transform 0.5s;
+            display: flex; flex-direction: column;
+            margin: 0 auto;
+        }
+        .id-card-new:hover { transform: scale(1.02); }
+        .id-header {
+            height: 40px; background: linear-gradient(90deg, #800000, var(--primary-red-bright));
+            display: flex; align-items: center; padding: 0 1rem; justify-content: space-between; font-weight: 900; color: white; font-size: 0.8rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5); border-bottom: 1px solid #000; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .sim-chip {
+            position: absolute; top: 50px; left: 1rem; width: 40px; height: 30px;
+            background: linear-gradient(135deg, #e6ac00, #cca300); border-radius: 4px; border: 1px solid #8a6e2f;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4); z-index: 10;
+        }
+        .sim-chip::before { content: ''; position: absolute; top: 20%; left: 20%; width: 60%; height: 60%; border: 1px solid rgba(0,0,0,0.2); border-radius: 2px; }
+        .id-body { display: flex; flex: 1; padding: 1rem; position: relative; z-index: 2; }
+        .id-left { width: 40%; display: flex; flex-direction: column; align-items: center; padding-top: 1rem; }
+        .id-right { width: 60%; padding-top: 0.75rem; display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+        .id-photo-box { width: 110px; height: 130px; background: #444; border: 2px solid #000; border-radius: 4px; object-fit: cover; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+        .id-detail-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
+        .id-lbl { color: #888; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
+        .id-txt { color: white; font-weight: 700; font-family: 'Courier New', monospace; letter-spacing: 0.5px; text-shadow: 1px 1px 0px #000; }
+        .mag-strip {
+            position: absolute; bottom: 50px; left: 0; width: 100%; height: 30px; background: #111; opacity: 0.9;
+            box-shadow: inset 0 0 5px rgba(255,255,255,0.1); border-top: 1px solid #333; border-bottom: 1px solid #333;
+        }
+        .id-footer-deets { position: absolute; bottom: 5px; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 1rem; font-size: 0.7rem; color: #aaa; }
+        .sig-box { width: 120px; height: 22px; border-bottom: 1px solid #888; font-family: 'cursive'; color: #ccc; font-style: italic; }
+        .gold-seal {
+            width: 40px; height: 40px; border: 2px solid var(--gold); border-radius: 50%;
+            color: var(--gold); display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 0.7rem; transform: rotate(-15deg);
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); background: radial-gradient(circle, rgba(255,215,0,0.1), transparent);
+        }
+        .barcode-placeholder { height: 25px; width: 100px; background: repeating-linear-gradient(90deg, #fff, #fff 2px, #000 2px, #000 4px); opacity: 0.8; }
+
+        /* Checker */
+        .progress-bar-container { height: 6px; background: #222; border-radius: 3px; margin: 10px 0; overflow: hidden; border: 1px solid #333; }
+        .progress-fill { height: 100%; background: var(--primary-red); width: 0%; transition: width 0.2s; box-shadow: 0 0 10px var(--primary-red); }
+        .result-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid #222; font-family: monospace; font-size: 0.8rem; word-break: break-all; }
+        .status-icon { margin-right: 10px; }
+        .status-text { font-weight: bold; }
+        .valid .status-text { color: #0f0; }
+        .invalid .status-text { color: #f00; }
+        .dead .status-text { color: #555; }
+        .hidden { display: none; }
+        .section { display: none; animation: slideUp 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes slideUp { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+        .disclaimer { background: rgba(211, 47, 47, 0.1); border-left: 4px solid var(--primary-red); padding: 0.75rem; margin-bottom: 1.5rem; font-size: 0.8rem; color: #ff9999; border-radius: 4px; }
+
+        /* Helper for fixed header on mobile */
+        .mobile-header {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%;
+            height: var(--header-height);
+            background: #0f0f0f;
+            border-bottom: 1px solid #333;
+            z-index: 100;
+            align-items: center;
+            padding: 0 1rem;
+            justify-content: space-between;
+        }
+        @media (max-width: 480px) {
+            .mobile-header { display: flex; }
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- MOBILE HEADER (Visible only on small screens) -->
+<div class="mobile-header">
+    <button class="hamburger" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+    <div class="brand-3d mobile-only">
+        <i class="fas fa-credit-card"></i>
+        <span>RSM<span>4CCGEN</span></span>
+    </div>
+</div>
+
+<!-- MOBILE OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeMobileMenu()"></div>
+
+<div id="app">
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+        <div class="brand-container desktop-only">
+            <!-- Social Links -->
+            <div class="social-icons">
+                <a href="https://t.me/addlist/ieEsSWX8D91iZDE8" target="_blank" class="social-btn"><i class="fab fa-telegram"></i></a>
+                <a href="https://www.instagram.com/rsm4everyone?igsh=MTdqZTgya28waDMxcg==" target="_blank" class="social-btn"><i class="fab fa-instagram"></i></a>
+                <a href="https://x.com/RSM4everyone" target="_blank" class="social-btn"><i class="fab fa-x-twitter"></i></a>
+            </div>
+            <!-- Desktop Logo -->
+            <div class="brand-3d desktop-only">
+                <i class="fas fa-credit-card"></i>
+                <span>RSM<span>4CCGEN</span></span>
+            </div>
+        </div>
+        
+        <nav class="nav-menu">
+            <button class="nav-btn active" onclick="showSection('generator')">
+                <i class="fas fa-credit-card"></i> CC Generator
+            </button>
+            <button class="nav-btn" onclick="showSection('checker')">
+                <i class="fas fa-shield-alt"></i> Live Checker
+            </button>
+            <button class="nav-btn" onclick="showSection('bin')">
+                <i class="fas fa-search"></i> BIN Lookup
+            </button>
+            <button class="nav-btn" onclick="showSection('visual-gen')">
+                <i class="fas fa-address-card"></i> Visual Gen
+            </button>
+            <button class="nav-btn" onclick="showSection('identity')">
+                <i class="fas fa-id-card"></i> Fake ID & Single
+            </button>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content">
+        <!-- 1. CREDIT CARD GENERATOR -->
+        <section id="generator" class="section active">
+            <div class="panel-3d">
+                <div class="panel-header">
+                    <h2><i class="fas fa-microchip"></i> Advanced Generator</h2>
+                    <div>
+                        <button class="btn-3d secondary" onclick="setGenMode('standard')" id="btn-mode-std">Standard</button>
+                        <button class="btn-3d secondary" onclick="setGenMode('bulk')" id="btn-mode-bulk">Bulk Generation</button>
+                    </div>
+                </div>
+                <div class="disclaimer">
+                    <i class="fas fa-exclamation-triangle"></i> TESTING DISCLAIMER: Generates mathematically valid Luhn numbers using real BIN ranges. For testing environments only.
+                </div>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>BIN / IIN (6-12 digits)</label>
+                        <input type="text" id="gen-bin" placeholder="e.g. 453590 (Leave blank for random)">
+                    </div>
+                    <div class="input-group">
+                        <label>Format</label>
+                        <select id="gen-format">
+                            <option value="pipe">PIPE (CC|MM|YY|CVV)</option>
+                            <option value="json">JSON</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Expiration Month</label>
+                        <select id="gen-month">
+                            <option value="Random">Random</option>
+                            <option value="01">01 - Jan</option><option value="02">02 - Feb</option><option value="03">03 - Mar</option>
+                            <option value="04">04 - Apr</option><option value="05">05 - May</option><option value="06">06 - Jun</option>
+                            <option value="07">07 - Jul</option><option value="08">08 - Aug</option><option value="09">09 - Sep</option>
+                            <option value="10">10 - Oct</option><option value="11">11 - Nov</option><option value="12">12 - Dec</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Expiration Year</label>
+                        <select id="gen-year">
+                            <option value="Random">Random</option>
+                            <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option>
+                            <option value="2027">2027</option><option value="2028">2028</option>
+                            <option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option>
+                            <option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option>
+                            <option value="2035">2035</option><option value="2036">2036</option><option value="2037">2037</option><option value="2038">2038</option>
+                            <option value="2039">2039</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>CVC (Leave blank to randomize)</label>
+                        <input type="text" id="gen-cvc" placeholder="Random CVC">
+                    </div>
+                    <div class="input-group">
+                        <label>Currency</label>
+                        <select id="gen-currency">
+                            <option value="USD">USD ($)</option>
+                            <option value="EUR">EUR (€)</option>
+                            <option value="GBP">GBP (£)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Quantity</label>
+                        <input type="number" id="gen-qty" value="10" min="1" max="1000">
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn-3d" onclick="generateCC()"><i class="fas fa-bolt"></i> Generate</button>
+                    <button class="btn-3d secondary" onclick="copyText('output-gen')"><i class="fas fa-copy"></i> Copy</button>
+                    <button class="btn-3d secondary" onclick="document.getElementById('output-gen').innerText=''"><i class="fas fa-trash"></i> Reset</button>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <label>GENERATED DATA</label>
+                    <div id="output-gen" class="terminal">Results will appear here...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. LIVE CREDIT CARD CHECKER -->
+        <section id="checker" class="section">
+            <div class="panel-3d">
+                <div class="panel-header">
+                    <h2><i class="fas fa-check-double"></i> Live CC Validator</h2>
+                </div>
+                <div class="disclaimer">
+                    Validates Syntax, Luhn Algorithm, and Expiration. Simulates live checking process.
+                </div>
+                <div class="input-group">
+                    <label>Input Cards (Format: CARD | MM | YYYY | CVV)</label>
+                    <textarea id="check-input" rows="6" placeholder="4111111111111111|12|2025|123&#10;4567890000000001|05|2026|799"></textarea>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="check-progress" class="progress-fill"></div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                    <button class="btn-3d" id="btn-start-check" onclick="startLiveCheck()"><i class="fas fa-play"></i> Start Validation</button>
+                    <button class="btn-3d secondary" onclick="stopCheck()"><i class="fas fa-stop"></i> Stop</button>
+                    <button class="btn-3d secondary" onclick="document.getElementById('check-results').innerHTML=''"><i class="fas fa-trash"></i> Clear</button>
+                    <div style="margin-left:auto; display:flex; gap:10px;">
+                        <button class="btn-3d secondary" onclick="filterResults('all')">All</button>
+                        <button class="btn-3d secondary" onclick="filterResults('valid')">Valid</button>
+                        <button class="btn-3d secondary" onclick="filterResults('dead')">Dead</button>
+                    </div>
+                </div>
+                <div id="check-results" style="margin-top: 1.5rem; max-height: 350px; overflow-y: auto; border: 1px solid #333; background: #000;">
+                    <!-- Results Here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. BIN CHECKER -->
+        <section id="bin" class="section">
+            <div class="panel-3d">
+                <div class="panel-header">
+                    <h2><i class="fas fa-database"></i> BIN Database Lookup</h2>
+                </div>
+                <div class="disclaimer">
+                    Issuer metadata only. No card validation.
+                </div>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                    <input type="text" id="bin-input" placeholder="Enter BIN (6-8 digits) e.g. 453590" style="flex:1; font-size: 1.1rem; letter-spacing: 2px;">
+                    <button class="btn-3d" onclick="lookupBin()"><i class="fas fa-search"></i> Lookup</button>
+                    <button class="btn-3d secondary" onclick="document.getElementById('bin-input').value=''"><i class="fas fa-eraser"></i></button>
+                </div>
+                <div id="bin-result-panel" class="hidden" style="border-top: 2px solid var(--primary-red); padding-top: 1.5rem;">
+                    <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                        <tr style="border-bottom: 1px solid #333;">
+                            <td style="padding: 10px; color: #888; width: 30%;">BRAND</td>
+                            <td style="padding: 10px; font-weight: bold; font-size: 1.1rem; color: var(--primary-red);" id="res-brand">VISA</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #333;">
+                            <td style="padding: 10px; color: #888;">TYPE</td>
+                            <td style="padding: 10px;" id="res-type">CREDIT</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #333;">
+                            <td style="padding: 10px; color: #888;">CATEGORY</td>
+                            <td style="padding: 10px;" id="res-category">PLATINUM</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #333;">
+                            <td style="padding: 10px; color: #888;">ISSUER</td>
+                            <td style="padding: 10px;" id="res-issuer">JPMORGAN CHASE</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: #888;">COUNTRY</td>
+                            <td style="padding: 10px;" id="res-country">UNITED STATES <span style="font-size:1.5rem; margin-left:10px;">🇺🇸</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. NEW VISUAL CARD GENERATOR -->
+        <section id="visual-gen" class="section">
+            <div class="panel-3d">
+                <div class="panel-header">
+                    <h2><i class="fas fa-address-card"></i> Realistic Card Gen</h2>
+                </div>
+                <div class="disclaimer">
+                    Generates 5 visually realistic credit cards with complete details.
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                    <div class="input-group" style="width: 100%;">
+                        <label>Select Network</label>
+                        <select id="vis-network" style="max-width: 100%;">
+                            <option value="visa">VISA</option>
+                            <option value="mastercard">MASTERCARD</option>
+                            <option value="amex">AMERICAN EXPRESS</option>
+                            <option value="discover">DISCOVER</option>
+                        </select>
+                    </div>
+                    <button class="btn-3d" onclick="generateVisualCards()"><i class="fas fa-magic"></i> Generate 5 Cards</button>
+                </div>
+                <div id="visual-output" class="card-display-grid">
+                    <div style="width:100%; text-align:center; color:#555; padding: 3rem 1rem;">Click Generate to create 5 Real Cards</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. FAKE ID CARD & SINGLE GEN -->
+        <section id="identity" class="section">
+            <!-- Fake ID Card -->
+            <div class="panel-3d">
+                <div class="panel-header">
+                    <h2><i class="fas fa-id-badge"></i> Professional ID Maker</h2>
+                    <div>
+                        <button class="btn-3d secondary" onclick="randomizeID()"><i class="fas fa-sync"></i> Single Gen</button>
+                        <button class="btn-3d secondary" id="btn-auto-gen" onclick="toggleAutoGen()"><i class="fas fa-robot"></i> Auto Renew</button>
+                    </div>
+                </div>
+                <div class="disclaimer">
+                    Generates realistic looking fake ID cards with Smart Chip, Mag Strip, and Gold Seal.
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="input-group">
+                            <label>University Name</label>
+                            <input type="text" id="id-uni" value="Sylhet Polytechnic Institute" oninput="updateID()">
+                        </div>
+                        <div class="input-group">
+                            <label>Student Name</label>
+                            <input type="text" id="id-name" value="Alexander Smith" oninput="updateID()">
+                        </div>
+                        <div class="input-group">
+                            <label>Student ID</label>
+                            <input type="text" id="id-num" value="2024-8859" oninput="updateID()">
+                        </div>
+                        <div class="input-group">
+                            <label>Course</label>
+                            <input type="text" id="id-course" value="Computer Science" oninput="updateID()">
+                        </div>
+                        <div class="input-group">
+                            <label>Date of Birth</label>
+                            <input type="text" id="id-dob" value="15 Mar 2001" oninput="updateID()">
+                        </div>
+                        <div class="input-group">
+                            <label>Academic Year</label>
+                            <input type="text" id="id-year" value="4th Year" oninput="updateID()">
+                        </div>
+                        <div class="input-group">
+                            <label>Photo Upload (Optional)</label>
+                            <input type="file" id="id-photo" accept="image/*" onchange="loadIDPhoto(event)">
+                        </div>
+                    </div>
+                    <!-- Preview -->
+                    <div class="id-wrapper">
+                        <div class="id-card-new">
+                            <div class="id-header">
+                                <span>STUDENT ID CARD</span>
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <div class="sim-chip"></div>
+                            <div class="mag-strip"></div>
+                            <div class="id-body">
+                                <div class="id-left">
+                                    <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" id="id-img" class="id-photo-box" alt="ID Photo">
+                                </div>
+                                <div class="id-right">
+                                    <div class="id-detail-row"><span class="id-lbl">INSTITUTION:</span> <span class="id-txt" id="render-uni">SYLHET POLYTECHNIC</span></div>
+                                    <div class="id-detail-row"><span class="id-lbl">NAME:</span> <span class="id-txt" id="render-name">ALEXANDER SMITH</span></div>
+                                    <div class="id-detail-row"><span class="id-lbl">ID NO:</span> <span class="id-txt" id="render-num">2024-8859</span></div>
+                                    <div class="id-detail-row"><span class="id-lbl">COURSE:</span> <span class="id-txt" id="render-course">CS</span></div>
+                                    <div class="id-detail-row"><span class="id-lbl">DOB:</span> <span class="id-txt" id="render-dob">15 Mar 2001</span></div>
+                                    <div class="id-detail-row"><span class="id-lbl">YEAR:</span> <span class="id-txt" id="render-year">4th Year</span></div>
+                                    <div style="margin-top:5px;">
+                                        <span class="id-lbl">SIGNATURE:</span>
+                                        <div class="sig-box">________________</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="id-footer-deets">
+                                <div class="gold-seal">OFFICIAL</div>
+                                <div class="barcode-placeholder"></div>
+                                <div style="text-align:right;">EXP: 01/28</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Single CC Generator (Below ID Card) -->
+            <div class="panel-3d" style="border-top: 4px solid var(--primary-red);">
+                <div class="panel-header">
+                    <h2><i class="fas fa-bolt"></i> Quick Single Generator</h2>
+                </div>
+                <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                    <div class="input-group">
+                        <label>Network</label>
+                        <select id="single-net">
+                            <option value="visa">Visa</option>
+                            <option value="mastercard">MasterCard</option>
+                            <option value="amex">Amex</option>
+                            <option value="discover">Discover</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Country</label>
+                        <select id="single-country">
+                            <option value="USA">USA</option>
+                            <option value="GBR">UK</option>
+                            <option value="FRA">France</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <button class="btn-3d" onclick="generateSingle()"><i class="fas fa-magic"></i> Generate Single CC</button>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <label>RESULT</label>
+                    <div id="single-output" class="terminal" style="height: 60px; min-height: 60px;"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    // --- NAVIGATION & RESPONSIVENESS ---
+    function showSection(id) {
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        const navMap = {'generator':0, 'checker':1, 'bin':2, 'visual-gen':3, 'identity':4};
+        document.querySelectorAll('.nav-btn')[navMap[id]].classList.add('active');
+
+        // Show Content
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        
+        // Mobile Auto-close sidebar logic
+        if(window.innerWidth <= 480) {
+            closeMobileMenu();
+        }
+    }
+
+    function toggleMobileMenu() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        if(sidebar.style.transform === 'translateX(0px)') {
+            closeMobileMenu();
+        } else {
+            overlay.classList.add('active');
+            sidebar.classList.add('active');
+        }
+    }
+
+    function closeMobileMenu() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        overlay.classList.remove('active');
+        sidebar.classList.remove('active');
+    }
+
+    // --- GENERATOR LOGIC ---
+    const realBins = {
+        visa: ['4', '45', '4567', '411111', '453590', '424242', '491736'],
+        mastercard: ['5', '51', '52', '53', '54', '55', '2221', '2720', '555555'],
+        amex: ['34', '37'],
+        discover: ['6011', '644', '65', '622126']
+    };
+
+    function setGenMode(mode) {
+        const qty = document.getElementById('gen-qty');
+        const stdBtn = document.getElementById('btn-mode-std');
+        const blkBtn = document.getElementById('btn-mode-bulk');
+        if(mode === 'standard') {
+            qty.value = 10; qty.max = 100;
+            stdBtn.style.background = 'var(--primary-red)'; stdBtn.style.color = '#fff';
+            blkBtn.style.background = 'linear-gradient(to bottom, #444, #222)'; blkBtn.style.color = '#fff';
+        } else {
+            qty.value = 100; qty.max = 1000;
+            blkBtn.style.background = 'var(--primary-red)'; blkBtn.style.color = '#fff';
+            stdBtn.style.background = 'linear-gradient(to bottom, #444, #222)'; stdBtn.style.color = '#fff';
+        }
+    }
+    setGenMode('standard');
+
+    function luhnCheck(val) {
+        let sum = 0; let shouldDouble = false;
+        for (let i = val.length - 1; i >= 0; i--) {
+            let digit = parseInt(val.charAt(i));
+            if (shouldDouble) { if ((digit *= 2) > 9) digit -= 9; }
+            sum += digit; shouldDouble = !shouldDouble;
+        }
+        return (sum % 10) == 0;
+    }
+
+    function calculateLuhn(partial) {
+        let checkSum = 0; let isEven = false;
+        for (let i = partial.length - 1; i >= 0; i--) {
+            let digit = parseInt(partial.charAt(i));
+            if (isEven) { if ((digit *= 2) > 9) digit -= 9; }
+            checkSum += digit; isEven = !isEven;
+        }
+        return (checkSum * 9) % 10;
+    }
+
+    function generateCC() {
+        let bin = document.getElementById('gen-bin').value.trim();
+        let format = document.getElementById('gen-format').value;
+        let month = document.getElementById('gen-month').value;
+        let year = document.getElementById('gen-year').value;
+        let cvc = document.getElementById('gen-cvc').value;
+        let qty = parseInt(document.getElementById('gen-qty').value);
+        let currency = document.getElementById('gen-currency').value;
+        let output = "";
+        if(!bin) {
+            const keys = Object.keys(realBins);
+            const net = keys[Math.floor(Math.random() * keys.length)];
+            bin = realBins[net][Math.floor(Math.random() * realBins[net].length)];
+        }
+        let len = (bin.startsWith('3')) ? 15 : 16;
+        if(bin.startsWith('4') || bin.startsWith('5')) len = 16;
+        for(let i=0; i<qty; i++) {
+            let partial = bin;
+            while(partial.length < len - 1) partial += Math.floor(Math.random() * 10);
+            let cc = partial + calculateLuhn(partial);
+            let m = (month === 'Random') ? String(Math.floor(Math.random()*12)+1).padStart(2,'0') : month;
+            let y = (year === 'Random') ? (2024 + Math.floor(Math.random()*15)) : year; 
+            let c = cvc;
+            if(!c) c = (cc.length === 15) ? Math.floor(Math.random()*9000+1000) : Math.floor(Math.random()*900+100);
+            if(format === 'pipe') output += `${cc}|${m}|${y}|${c}\n`;
+            else if(format === 'csv') output += `${cc},${m},${y},${c}\n`;
+            else output += JSON.stringify({cc:cc, m:m, y:y, cvv:c, currency:currency}) + "\n";
+        }
+        document.getElementById('output-gen').innerText = output;
+    }
+
+    function generateSingle() {
+        const net = document.getElementById('single-net').value;
+        const bins = realBins[net];
+        const bin = bins[Math.floor(Math.random() * bins.length)];
+        let len = (net === 'amex') ? 15 : 16;
+        let partial = bin;
+        while(partial.length < len - 1) partial += Math.floor(Math.random() * 10);
+        const cc = partial + calculateLuhn(partial);
+        const m = String(Math.floor(Math.random()*12)+1).padStart(2,'0');
+        const y = 2024 + Math.floor(Math.random()*15);
+        const c = (net === 'amex') ? Math.floor(Math.random()*9000+1000) : Math.floor(Math.random()*900+100);
+        document.getElementById('single-output').innerText = `${cc}|${m}|${y}|${c}`;
+    }
+
+    // --- BIN CHECKER DATABASE ---
+    const binDatabase = {
+        '4': { brand: 'Visa', type: 'Debit/Credit', cat: 'Classic', issuer: 'Various Banks', country: 'USA', flag: '🇺🇸' },
+        '5': { brand: 'MasterCard', type: 'Debit/Credit', cat: 'Standard', issuer: 'Various Banks', country: 'USA', flag: '🇺🇸' },
+        '34': { brand: 'American Express', type: 'Credit', cat: 'Gold', issuer: 'Amex', country: 'USA', flag: '🇺🇸' },
+        '37': { brand: 'American Express', type: 'Credit', cat: 'Platinum', issuer: 'Amex', country: 'USA', flag: '🇺🇸' },
+        '6011': { brand: 'Discover', type: 'Credit', cat: 'Discover', issuer: 'Discover Bank', country: 'USA', flag: '🇺🇸' },
+        '35': { brand: 'JCB', type: 'Credit', cat: 'Classic', issuer: 'JCB', country: 'Japan', flag: '🇯🇵' },
+        '453590': { brand: 'Visa', type: 'Credit', cat: 'Platinum', issuer: 'Chase Bank USA', country: 'USA', flag: '🇺🇸' },
+        '411111': { brand: 'Visa', type: 'Credit', cat: 'Classic', issuer: 'Bank of America', country: 'USA', flag: '🇺🇸' },
+        '555555': { brand: 'MasterCard', type: 'Debit', cat: 'Gold', issuer: 'Citi Bank', country: 'USA', flag: '🇺🇸' },
+        '400000': { brand: 'Visa', type: 'Debit', cat: 'Classic', issuer: 'Stripe Test', country: 'USA', flag: '🇺🇸' },
+        '222100': { brand: 'MasterCard', type: 'Credit', cat: 'World', issuer: 'Barclays UK', country: 'UK', flag: '🇬🇧' },
+        '272099': { brand: 'MasterCard', type: 'Credit', cat: 'Infinite', issuer: 'Deutsche Bank', country: 'Germany', flag: '🇩🇪' },
+        '621094': { brand: 'UnionPay', type: 'Debit', cat: 'Classic', issuer: 'ICBC', country: 'China', flag: '🇨🇳' },
+        '414720': { brand: 'Visa', type: 'Debit', cat: 'Classic', issuer: 'Chase', country: 'USA', flag: '🇺🇸' },
+        '424242': { brand: 'Visa', type: 'Credit', cat: 'Testing', issuer: 'Stripe', country: 'USA', flag: '🇺🇸' }
+    };
+
+    function lookupBin() {
+        const input = document.getElementById('bin-input').value.trim();
+        if(input.length < 2) return;
+        let res = null;
+        for(let l = input.length; l >= 2; l--) {
+            const sub = input.substring(0, l);
+            if(binDatabase[sub]) { res = binDatabase[sub]; break; }
+        }
+        const panel = document.getElementById('bin-result-panel');
+        if(res) {
+            document.getElementById('res-brand').innerText = res.brand;
+            document.getElementById('res-type').innerText = res.type;
+            document.getElementById('res-category').innerText = res.cat;
+            document.getElementById('res-issuer').innerText = res.issuer;
+            document.getElementById('res-country').innerHTML = `${res.country} <span style="font-size:1.5rem; margin-left:10px;">${res.flag}</span>`;
+            panel.classList.remove('hidden');
+        } else {
+            document.getElementById('res-brand').innerText = "UNKNOWN";
+            document.getElementById('res-type').innerText = "N/A";
+            document.getElementById('res-category').innerText = "N/A";
+            document.getElementById('res-issuer').innerText = "Unknown Issuer";
+            document.getElementById('res-country').innerText = "Unknown";
+            panel.classList.remove('hidden');
+        }
+    }
+
+    // --- LIVE CHECKER ---
+    let checking = false;
+    function startLiveCheck() {
+        if(checking) return;
+        checking = true;
+        document.getElementById('btn-start-check').disabled = true;
+        const lines = document.getElementById('check-input').value.split('\n');
+        const resultsDiv = document.getElementById('check-results');
+        resultsDiv.innerHTML = "";
+        let index = 0;
+        function process() {
+            if(!checking || index >= lines.length) {
+                checking = false;
+                document.getElementById('btn-start-check').disabled = false;
+                document.getElementById('check-progress').style.width = '100%';
+                return;
+            }
+            const line = lines[index].trim();
+            if(line) {
+                const parts = line.split('|');
+                const cc = parts[0] ? parts[0].replace(/\D/g,'') : '';
+                const mm = parts[1];
+                const yy = parts[2];
+                const cvv = parts[3];
+                const luhnValid = luhnCheck(cc);
+                let expValid = false;
+                if(mm && yy && yy.length === 4) {
+                    const now = new Date();
+                    const expDate = new Date(parseInt(yy), parseInt(mm)-1);
+                    expValid = expDate > now;
+                }
+                const cvvValid = cvv && (cvv.length === 3 || cvv.length === 4);
+                let status = "DEAD";
+                let cssClass = "dead";
+                let icon = '<i class="fas fa-times-circle status-icon"></i>';
+                if(luhnValid && expValid && cvvValid) {
+                    status = "VALID / LIVE";
+                    cssClass = "valid";
+                    icon = '<i class="fas fa-check-circle status-icon"></i>';
+                } else if (luhnValid) {
+                    status = "FORMAT OK (CHECK EXP/CVV)";
+                    cssClass = "valid";
+                }
+                const row = `
+                    <div class="result-row ${cssClass}" data-type="${cssClass}">
+                        <div>${icon} <span class="status-text">${status}</span></div>
+                        <div>${cc} | ${mm} | ${yy}</div>
+                    </div>
+                `;
+                resultsDiv.innerHTML += row;
+                resultsDiv.scrollTop = resultsDiv.scrollHeight;
+            }
+            index++;
+            const pct = (index / lines.length) * 100;
+            document.getElementById('check-progress').style.width = pct + '%';
+            setTimeout(process, Math.random() * 300 + 100);
+        }
+        process();
+    }
+
+    function stopCheck() {
+        checking = false;
+        document.getElementById('btn-start-check').disabled = false;
+    }
+
+    function filterResults(type) {
+        const rows = document.querySelectorAll('.result-row');
+        rows.forEach(r => {
+            if(type === 'all') r.style.display = 'flex';
+            else if(type === 'valid' && r.classList.contains('valid')) r.style.display = 'flex';
+            else if(type === 'dead' && r.classList.contains('dead')) r.style.display = 'flex';
+            else r.style.display = 'none';
+        });
+    }
+
+    // --- VISUAL CARD GENERATOR (NEW FEATURE) ---
+    const fakeNames = [
+        "John Smith", "Emily Blunt", "David O'Connor", "Michael Chang", "Sarah Jenkins", 
+        "Jessica Hyde", "Alex Mercer", "Sophie Turner", "Liam Neeson", "Kate Winslet"
+    ];
+
+    function generateVisualCards() {
+        const net = document.getElementById('vis-network').value;
+        const bins = realBins[net];
+        const bin = bins[Math.floor(Math.random() * bins.length)];
+        const outputDiv = document.getElementById('visual-output');
+        outputDiv.innerHTML = "";
+        let len = (net === 'amex') ? 15 : 16;
+        let bgClass = 'visa-bg';
+        let logoIcon = 'VISA';
+        if(net === 'mastercard') { bgClass = 'mc-bg'; logoIcon = 'MASTERCARD'; }
+        if(net === 'amex') { bgClass = 'amex-bg'; logoIcon = 'AMEX'; }
+        if(net === 'discover') { bgClass = 'discover-bg'; logoIcon = 'DISCOVER'; }
+        for(let i=0; i<5; i++) {
+            let partial = bin;
+            while(partial.length < len - 1) partial += Math.floor(Math.random() * 10);
+            const cc = partial + calculateLuhn(partial);
+            const m = String(Math.floor(Math.random()*12)+1).padStart(2,'0');
+            const y = 2024 + Math.floor(Math.random()*10);
+            const c = (net === 'amex') ? Math.floor(Math.random()*9000+1000) : Math.floor(Math.random()*900+100);
+            const name = fakeNames[Math.floor(Math.random() * fakeNames.length)];
+            let ccFormatted = "";
+            for(let j=0; j<cc.length; j+=4) ccFormatted += cc.substring(j, j+4) + " ";
+            outputDiv.innerHTML += `
+                <div class="cc-visual-3d ${bgClass}">
+                    <div class="cc-top-row">
+                        <div class="cc-chip"></div>
+                        <div class="cc-logo">${logoIcon}</div>
+                    </div>
+                    <div class="cc-number">${ccFormatted}</div>
+                    <div class="cc-bottom">
+                        <div class="cc-name">${name}</div>
+                        <div class="cc-details">
+                            <div class="cc-exp">${m}/${y.toString().substring(2)}</div>
+                            <div class="cc-cvv">CVV: ${c}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // --- ID CARD LOGIC ---
+    const studentPhotos = [
+        'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=200&q=80',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',
+        'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=200&q=80',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80'
+    ];
+
+    let autoGenInterval = null;
+
+    function randomizeID() {
+        const randPhoto = studentPhotos[Math.floor(Math.random() * studentPhotos.length)];
+        document.getElementById('id-img').src = randPhoto;
+        const randName = fakeNames[Math.floor(Math.random() * fakeNames.length)];
+        document.getElementById('id-name').value = randName;
+        document.getElementById('render-name').innerText = randName.toUpperCase();
+        const randID = "2024-" + Math.floor(1000 + Math.random() * 9000);
+        document.getElementById('id-num').value = randID;
+        document.getElementById('render-num').innerText = randID;
+        const years = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
+        const randYear = years[Math.floor(Math.random() * years.length)];
+        document.getElementById('id-year').value = randYear;
+        document.getElementById('render-year').innerText = randYear;
+    }
+
+    function toggleAutoGen() {
+        const btn = document.getElementById('btn-auto-gen');
+        if(autoGenInterval) {
+            clearInterval(autoGenInterval);
+            autoGenInterval = null;
+            btn.classList.remove('active-auto');
+            btn.innerHTML = '<i class="fas fa-robot"></i> Auto Renew';
+        } else {
+            randomizeID(); 
+            autoGenInterval = setInterval(randomizeID, 1000); 
+            btn.classList.add('active-auto');
+            btn.innerHTML = '<i class="fas fa-stop"></i> Stop Renew';
+        }
+    }
+
+    function updateID() {
+        document.getElementById('render-uni').innerText = document.getElementById('id-uni').value.toUpperCase();
+        document.getElementById('render-name').innerText = document.getElementById('id-name').value.toUpperCase();
+        document.getElementById('render-num').innerText = document.getElementById('id-num').value;
+        document.getElementById('render-course').innerText = document.getElementById('id-course').value.toUpperCase();
+        document.getElementById('render-dob').innerText = document.getElementById('id-dob').value;
+        document.getElementById('render-year').innerText = document.getElementById('id-year').value;
+    }
+
+    function loadIDPhoto(e) {
+        const file = e.target.files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) { document.getElementById('id-img').src = evt.target.result; }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Utils
+    function copyText(id) {
+        navigator.clipboard.writeText(document.getElementById(id).innerText);
+        alert("Copied to clipboard!");
+    }
+</script>
+</body>
+</html>
